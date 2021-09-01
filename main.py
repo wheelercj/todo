@@ -4,6 +4,7 @@ from typing import Union
 from dotenv import load_dotenv
 
 
+# https://developer.todoist.com/rest/v1/
 Projects = list[dict[str, Union[int, str, bool]]]
 Tasks = list[dict[str, Union[int, str]]]
 
