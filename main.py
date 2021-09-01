@@ -12,12 +12,13 @@ Tasks = list[dict[str, Union[int, str]]]
 def main():
     """Prints all Todoist project names, asks the user to choose one, prints all of its active tasks"""
     load_dotenv()
-    projects: Projects = fetch_projects()
+    api_token: str = get_api_token()
+    projects: Projects = fetch_projects(api_token)
     print_project_names(projects)
     chosen_project_name: str = input('Enter a project name: ')
     try:
         project_id: int = get_project_id(chosen_project_name, projects)
-        active_tasks: Tasks = fetch_active_tasks(project_id)
+        active_tasks: Tasks = fetch_active_tasks(project_id, api_token)
         print(f'Here are the active tasks in the {chosen_project_name} project:')
         for task in active_tasks:
             print(task['content'])
@@ -25,12 +26,28 @@ def main():
         print(e)
 
 
-def fetch_projects() -> Projects:
+def get_api_token() -> str:
+    """Gets the API token from a .env file or directly from the user
+    
+    If a .env file is not found, the user is asked for the token. If the user
+    provides the token, a .env file with the token is created.
+    """
+    try:
+        api_token = os.environ['my_todoist_api_token']
+    except KeyError:
+        print('Find your Todoist API token in settings > integrations')
+        api_token = input('and enter it here: ')
+        with open('.env', 'a') as file:
+            file.write(f'my_todoist_api_token={api_token}')
+    return api_token
+
+
+def fetch_projects(api_token: str) -> Projects:
     """Fetches all projects"""
     return requests.get(
         'https://api.todoist.com/rest/v1/projects',
         headers={
-            'Authorization': f'Bearer {os.environ["my_todoist_api_token"]}'}
+            'Authorization': f'Bearer {api_token}'}
     ).json()
 
 
@@ -52,7 +69,7 @@ def get_project_id(chosen_project_name: str, projects: Projects) -> int:
     raise ValueError('Project not found')
 
 
-def fetch_active_tasks(project_id: int) -> Tasks:
+def fetch_active_tasks(project_id: int, api_token: str) -> Tasks:
     """Fetches all active tasks in a project"""
     return requests.get(
         'https://api.todoist.com/rest/v1/tasks',
@@ -60,7 +77,7 @@ def fetch_active_tasks(project_id: int) -> Tasks:
             'project_id': project_id
         },
         headers={
-            'Authorization': f'Bearer {os.environ["my_todoist_api_token"]}'
+            'Authorization': f'Bearer {api_token}'
         }).json()
 
 
