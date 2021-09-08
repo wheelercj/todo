@@ -1,5 +1,7 @@
 import os
 import requests
+import uuid
+import json
 from typing import Union
 from dotenv import load_dotenv
 
@@ -10,20 +12,26 @@ Tasks = list[dict[str, Union[int, str]]]
 
 
 def main():
-    """Prints all Todoist project names, asks the user to choose one, prints all of its active tasks"""
+    """Prints all active tasks in one project, or creates multiple tasks from markdown"""
     load_dotenv()
     api_token: str = get_api_token()
     projects: Projects = fetch_projects(api_token)
     print_project_names(projects)
     chosen_project_name: str = input('Enter a project name: ')
+
     try:
         project_id: int = get_project_id(chosen_project_name, projects)
-        active_tasks: Tasks = fetch_active_tasks(project_id, api_token)
-        print(f'Here are the active tasks in the {chosen_project_name} project:')
-        for task in active_tasks:
-            print(task['content'])
     except ValueError as e:
         print(e)
+    else:
+        chosen_action = input(
+            '1. print tasks'
+            '\n2. add tasks'
+            '\n> ')
+        if chosen_action == '1':
+            print_project_tasks(chosen_project_name, project_id, api_token)
+        elif chosen_action == '2':
+            bulk_create_tasks(project_id, api_token)
 
 
 def get_api_token() -> str:
@@ -67,6 +75,43 @@ def get_project_id(chosen_project_name: str, projects: Projects) -> int:
         if project['name'] == chosen_project_name:
             return project['id']
     raise ValueError('Project not found')
+
+
+def print_project_tasks(chosen_project_name: str, project_id: int, api_token: str) -> None:
+    """Prints a project's tasks to the terminal"""
+    active_tasks: Tasks = fetch_active_tasks(project_id, api_token)
+    print(f'Here are the active tasks in the {chosen_project_name} project:')
+    for task in active_tasks:
+        print(task['content'])
+
+
+def bulk_create_tasks(project_id: int, api_token: str) -> None:
+    """Creates new Todoist tasks from text where each task is on its own line"""
+    print('Enter the tasks, with each task on its own line. Then enter "DONE".')
+    task_text = ''
+    while task_text != 'DONE':
+        task_text = input()
+        if task_text == 'DONE':
+            break
+        post_new_task(task_text.strip(), project_id, api_token)
+    print('Tasks created')
+
+
+def post_new_task(task_text: str, project_id: int, api_token: str) -> None:
+    """Makes an API request to add new tasks to Todoist"""
+    requests.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        data=json.dumps({
+            'content': task_text,
+            'due_lang': 'en',
+            # 'priority': 4,
+            'project_id': project_id
+        }),
+        headers={
+            'Content-Type': 'application/json',
+            'X-Request-Id': str(uuid.uuid4()),
+            'Authorization': f'Bearer {api_token}'
+        }).json()
 
 
 def fetch_active_tasks(project_id: int, api_token: str) -> Tasks:
