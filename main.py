@@ -2,13 +2,21 @@ import os
 import requests
 import uuid
 import json
-from typing import Union
+from typing import Union, Optional
 from dotenv import load_dotenv
+from requests import api
 
 
 # https://developer.todoist.com/rest/v1/
 Projects = list[dict[str, Union[int, str, bool]]]
 Tasks = list[dict[str, Union[int, str]]]
+
+
+class Project:
+    def __init__(self, id: int, name: str, api_token: str):
+        self.id = id
+        self.name = name
+        self.api_token = api_token
 
 
 def main():
@@ -24,14 +32,16 @@ def main():
     except ValueError as e:
         print(e)
     else:
+        project = Project(project_id, chosen_project_name, api_token)
+
         chosen_action = input(
             '1. print tasks'
             '\n2. add tasks'
             '\n> ')
         if chosen_action == '1':
-            print_project_tasks(chosen_project_name, project_id, api_token)
+            print_project_tasks(project)
         elif chosen_action == '2':
-            bulk_create_tasks(project_id, api_token)
+            bulk_create_tasks(project)
 
 
 def get_api_token() -> str:
@@ -77,52 +87,91 @@ def get_project_id(chosen_project_name: str, projects: Projects) -> int:
     raise ValueError('Project not found')
 
 
-def print_project_tasks(chosen_project_name: str, project_id: int, api_token: str) -> None:
+def print_project_tasks(project: Project) -> None:
     """Prints a project's tasks to the terminal"""
-    active_tasks: Tasks = fetch_active_tasks(project_id, api_token)
-    print(f'Here are the active tasks in the {chosen_project_name} project:')
+    active_tasks: Tasks = fetch_active_tasks(project)
+    print(f'Here are the active tasks in the {project.name} project:')
     for task in active_tasks:
         print(task['content'])
 
 
-def bulk_create_tasks(project_id: int, api_token: str) -> None:
-    """Creates new Todoist tasks from text where each task is on its own line"""
-    print('Enter the tasks, with each task on its own line. Then enter "DONE".')
-    task_text = ''
-    while task_text != 'DONE':
-        task_text = input()
-        if task_text == 'DONE':
+def bulk_create_tasks(project: Project) -> None:
+    """Creates new Todoist tasks and sections from user input"""
+    print('Enter the tasks with each task on its own line. Sections can be '
+        'created by starting their lines with # (tag symbols). After entering '
+        'all tasks and sections, enter DONE')
+    title = ''
+    section_id = None
+    while title != 'DONE':
+        title = input().strip()
+        if title == 'DONE':
             break
-        post_new_task(task_text.strip(), project_id, api_token)
+        elif not title:
+            continue
+        elif title.startswith('#'):
+            title = title.lstrip('#').strip()
+            section_id: int = post_section(title, project)
+        else:
+            if title.startswith('*'):
+                title = title.lstrip('*').strip()
+            elif title.startswith('- [ ]'):
+                title = title.lstrip('- [ ]').strip()
+            elif title.startswith('-'):
+                title = title.lstrip('-').strip()
+
+            post_task(title, project, section_id)
+
     print('Tasks created')
 
 
-def post_new_task(task_text: str, project_id: int, api_token: str) -> None:
-    """Makes an API request to add new tasks to Todoist"""
-    requests.post(
-        'https://api.todoist.com/rest/v1/tasks',
+def post_section(section_title: str, project: Project) -> int:
+    """Makes an API request to add a new Todoist task section
+    
+    Returns the new section's ID.
+    """
+    response: str = requests.post(
+        'https://api.todoist.com/rest/v1/sections',
         data=json.dumps({
-            'content': task_text,
-            'due_lang': 'en',
-            # 'priority': 4,
-            'project_id': project_id
+            'project_id': project.id,
+            'name': section_title
         }),
         headers={
             'Content-Type': 'application/json',
             'X-Request-Id': str(uuid.uuid4()),
-            'Authorization': f'Bearer {api_token}'
+            'Authorization': f'Bearer {project.api_token}'
+        }).json()
+
+    return response['id']
+
+
+def post_task(task_title: str, project: Project, section_id: Optional[int]) -> None:
+    """Makes an API request to add a new task to Todoist"""
+    data = {
+        'content': task_title,
+        'due_lang': 'en',
+        'project_id': project.id }
+    if section_id:
+        data['section_id'] = section_id
+
+    requests.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        data=json.dumps(data),
+        headers={
+            'Content-Type': 'application/json',
+            'X-Request-Id': str(uuid.uuid4()),
+            'Authorization': f'Bearer {project.api_token}'
         }).json()
 
 
-def fetch_active_tasks(project_id: int, api_token: str) -> Tasks:
+def fetch_active_tasks(project: Project) -> Tasks:
     """Fetches all active tasks in a project"""
     return requests.get(
         'https://api.todoist.com/rest/v1/tasks',
         params={
-            'project_id': project_id
+            'project_id': project.id
         },
         headers={
-            'Authorization': f'Bearer {api_token}'
+            'Authorization': f'Bearer {project.api_token}'
         }).json()
 
 
