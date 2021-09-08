@@ -1,10 +1,10 @@
 import os
+import re
 import requests
 import uuid
 import json
 from typing import Union, Optional
 from dotenv import load_dotenv
-from requests import api
 
 
 # https://developer.todoist.com/rest/v1/
@@ -39,9 +39,9 @@ def main():
             '\n2. add tasks'
             '\n> ')
         if chosen_action == '1':
-            print_project_tasks(project)
+            print_tasks(project)
         elif chosen_action == '2':
-            bulk_create_tasks(project)
+            create_tasks(project)
 
 
 def get_api_token() -> str:
@@ -87,7 +87,7 @@ def get_project_id(chosen_project_name: str, projects: Projects) -> int:
     raise ValueError('Project not found')
 
 
-def print_project_tasks(project: Project) -> None:
+def print_tasks(project: Project) -> None:
     """Prints a project's tasks to the terminal"""
     active_tasks: Tasks = fetch_active_tasks(project)
     print(f'Here are the active tasks in the {project.name} project:')
@@ -95,11 +95,13 @@ def print_project_tasks(project: Project) -> None:
         print(task['content'])
 
 
-def bulk_create_tasks(project: Project) -> None:
+def create_tasks(project: Project) -> None:
     """Creates new Todoist tasks and sections from user input"""
-    print('Enter the tasks with each task on its own line. Sections can be '
-        'created by starting their lines with # (tag symbols). After entering '
-        'all tasks and sections, enter DONE')
+    print('Enter the tasks with each task on its own line. To add a date to a '
+        '\ntask, use [YYMMDD] (including the square brackets) at the end of '
+        '\nthe line, e.g. [210908] to set the due date to 2021-9-8. Sections '
+        '\ncan be created by starting their lines with # (tag symbols). After '
+        '\nentering all tasks and sections, enter DONE')
     title = ''
     section_id = None
     while title != 'DONE':
@@ -112,16 +114,32 @@ def bulk_create_tasks(project: Project) -> None:
             title = title.lstrip('#').strip()
             section_id: int = post_section(title, project)
         else:
-            if title.startswith('*'):
-                title = title.lstrip('*').strip()
-            elif title.startswith('- [ ]'):
-                title = title.lstrip('- [ ]').strip()
-            elif title.startswith('-'):
-                title = title.lstrip('-').strip()
-
-            post_task(title, project, section_id)
+            title, due_date = parse_task(title)
+            post_task(title, project, section_id, due_date)
 
     print('Tasks created')
+
+
+def parse_task(content: str) -> tuple[str, Optional[str]]:
+    """Removes unneeded markdown and finds a due date, if present
+    
+    If a due date is returned, it is in the format YYYY-MM-DD.
+    """
+    if content.startswith('*'):
+        content = content.lstrip('*').strip()
+    elif content.startswith('- [ ]'):
+        content = content.lstrip('- [ ]').strip()
+    elif content.startswith('-'):
+        content = content.lstrip('-').strip()
+
+    due_date = None
+    match = re.search(r'\[\d{6}\]$', content)
+    if match:
+        due_date = match[0].lstrip('[').rstrip(']')
+        due_date = f'20{due_date[:2]}-{due_date[2:4]}-{due_date[4:]}'
+        content = content.removesuffix(match[0]).strip()
+    
+    return content, due_date
 
 
 def post_section(section_title: str, project: Project) -> int:
@@ -144,14 +162,19 @@ def post_section(section_title: str, project: Project) -> int:
     return response['id']
 
 
-def post_task(task_title: str, project: Project, section_id: Optional[int]) -> None:
-    """Makes an API request to add a new task to Todoist"""
+def post_task(task_title: str, project: Project, section_id: Optional[int], due_date: Optional[str]) -> None:
+    """Makes an API request to add a new task to Todoist
+    
+    Due dates must be in the YYYY-MM-DD format.
+    """
     data = {
         'content': task_title,
         'due_lang': 'en',
         'project_id': project.id }
     if section_id:
         data['section_id'] = section_id
+    if due_date:
+        data['due_date'] = due_date
 
     requests.post(
         'https://api.todoist.com/rest/v1/tasks',
