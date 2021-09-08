@@ -35,7 +35,7 @@ def main():
         project = Project(project_id, chosen_project_name, api_token)
 
         chosen_action = input(
-            '1. print tasks'
+            '1. view tasks'
             '\n2. add tasks'
             '\n> ')
         if chosen_action == '1':
