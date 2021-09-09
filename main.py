@@ -12,10 +12,11 @@ Projects = list[dict[str, Union[int, str, bool]]]
 Tasks = list[dict[str, Union[int, str]]]
 
 
-class Project:
-    def __init__(self, id: int, name: str, api_token: str):
-        self.id = id
-        self.name = name
+class UserData:
+    """Data about the project chosen by the user, and the user's API token"""
+    def __init__(self, project_id: int, project_name: str, api_token: str):
+        self.project_id = project_id
+        self.project_name = project_name
         self.api_token = api_token
 
 
@@ -32,16 +33,16 @@ def main():
     except ValueError as e:
         print(e)
     else:
-        project = Project(project_id, chosen_project_name, api_token)
+        user_data = UserData(project_id, chosen_project_name, api_token)
 
         chosen_action = input(
             '1. view tasks'
             '\n2. add tasks'
             '\n> ')
         if chosen_action == '1':
-            print_tasks(project)
+            print_tasks(user_data)
         elif chosen_action == '2':
-            create_tasks(project)
+            create_tasks(user_data)
 
 
 def get_api_token() -> str:
@@ -87,15 +88,15 @@ def get_project_id(chosen_project_name: str, projects: Projects) -> int:
     raise ValueError('Project not found')
 
 
-def print_tasks(project: Project) -> None:
+def print_tasks(user_data: UserData) -> None:
     """Prints a project's tasks to the terminal"""
-    active_tasks: Tasks = fetch_active_tasks(project)
-    print(f'Here are the active tasks in the {project.name} project:')
+    active_tasks: Tasks = fetch_active_tasks(user_data)
+    print(f'Here are the active tasks in the {user_data.project_name} project:')
     for task in active_tasks:
         print(task['content'])
 
 
-def create_tasks(project: Project) -> None:
+def create_tasks(user_data: UserData) -> None:
     """Creates new Todoist tasks and sections from user input"""
     print('Enter the tasks with each task on its own line. To add a date to a '
         '\ntask, use [YYMMDD] (including the square brackets) at the end of '
@@ -112,10 +113,10 @@ def create_tasks(project: Project) -> None:
             continue
         elif title.startswith('#'):
             title = title.lstrip('#').strip()
-            section_id: int = post_section(title, project)
+            section_id: int = post_section(title, user_data)
         else:
             title, due_date = parse_task(title)
-            post_task(title, project, section_id, due_date)
+            post_task(title, user_data, section_id, due_date)
 
     print('Tasks created')
 
@@ -142,7 +143,7 @@ def parse_task(content: str) -> tuple[str, Optional[str]]:
     return content, due_date
 
 
-def post_section(section_title: str, project: Project) -> int:
+def post_section(section_title: str, user_data: UserData) -> int:
     """Makes an API request to add a new Todoist task section
     
     Returns the new section's ID.
@@ -150,19 +151,19 @@ def post_section(section_title: str, project: Project) -> int:
     response: str = requests.post(
         'https://api.todoist.com/rest/v1/sections',
         data=json.dumps({
-            'project_id': project.id,
+            'project_id': user_data.project_id,
             'name': section_title
         }),
         headers={
             'Content-Type': 'application/json',
             'X-Request-Id': str(uuid.uuid4()),
-            'Authorization': f'Bearer {project.api_token}'
+            'Authorization': f'Bearer {user_data.api_token}'
         }).json()
 
     return response['id']
 
 
-def post_task(task_title: str, project: Project, section_id: Optional[int], due_date: Optional[str]) -> None:
+def post_task(task_title: str, user_data: UserData, section_id: Optional[int], due_date: Optional[str]) -> None:
     """Makes an API request to add a new task to Todoist
     
     Due dates must be in the YYYY-MM-DD format.
@@ -170,7 +171,7 @@ def post_task(task_title: str, project: Project, section_id: Optional[int], due_
     data = {
         'content': task_title,
         'due_lang': 'en',
-        'project_id': project.id }
+        'project_id': user_data.project_id }
     if section_id:
         data['section_id'] = section_id
     if due_date:
@@ -182,19 +183,19 @@ def post_task(task_title: str, project: Project, section_id: Optional[int], due_
         headers={
             'Content-Type': 'application/json',
             'X-Request-Id': str(uuid.uuid4()),
-            'Authorization': f'Bearer {project.api_token}'
+            'Authorization': f'Bearer {user_data.api_token}'
         }).json()
 
 
-def fetch_active_tasks(project: Project) -> Tasks:
+def fetch_active_tasks(user_data: UserData) -> Tasks:
     """Fetches all active tasks in a project"""
     return requests.get(
         'https://api.todoist.com/rest/v1/tasks',
         params={
-            'project_id': project.id
+            'project_id': user_data.project_id
         },
         headers={
-            'Authorization': f'Bearer {project.api_token}'
+            'Authorization': f'Bearer {user_data.api_token}'
         }).json()
 
 
