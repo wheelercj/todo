@@ -1,10 +1,11 @@
 import requests
-from typing import Union
+from typing import Union, Optional
 
 
 # https://developer.todoist.com/rest/v1/
 Projects = list[dict[str, Union[int, str, bool]]]  # Same as API.
-Tasks = list[dict[str, Union[int, str]]]  # Same as API.
+Task = dict[str, Union[int, str]]
+Tasks = list[Task]  # Same as API.
 Sections = list[dict[str, Union[int, str]]]  # Same as API.
 MySections = dict[int, dict[str, Union[str, Tasks]]]  # Customized.
 '''
@@ -95,4 +96,21 @@ class Project:
             if section_name:
                 print(f'## {section_name}')
             for task in section['tasks']:
-                print(f'  {task["content"]}')
+                due_date = self.get_task_due_date(task)
+                if due_date:
+                    print(f'  {task["content"]} [{due_date}]')
+                else:
+                    print(f'  {task["content"]}')
+
+
+    def get_task_due_date(self, task: Task) -> Optional[str]:
+        """Gets a task's due date in YYMMDD format
+        
+        Returns None if the task has no due date.
+        """
+        try:
+            due_date: str = task['due']['date']  # In the form YYYY-MM-DD.
+            due_date = due_date[2:4] + due_date[5:7] + due_date[8:10]  # In the form YYMMDD.
+            return due_date
+        except KeyError:
+            return None
