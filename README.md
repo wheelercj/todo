@@ -1,6 +1,6 @@
 # refactor todo list
 
-For creating or copying [Todoist](https://todoist.com/) tasks in bulk. Requires Python 3.9+.
+For creating or copying [Todoist](https://todoist.com/) tasks in bulk.
 
 Here's what it's like creating new tasks in bulk. I started off creating a new project in Todoist, but you don't need to.  
 ![empty Todoist project](images/empty_Todoist_project.png)
