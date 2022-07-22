@@ -1,6 +1,9 @@
 from __future__ import annotations
+
+from typing import Optional
+from typing import Union
+
 import requests
-from typing import Union, Optional
 
 
 # https://developer.todoist.com/rest/v1/

@@ -1,14 +1,17 @@
-# external imports
-import re
-import requests
-import uuid
 import json
+import re
+import uuid
 from typing import Optional
+
+import requests
 from dotenv import load_dotenv
 
-# internal import
-from project import Project, Projects
-from create_task import post_task, get_api_token, fetch_projects, get_project_id
+from create_task import fetch_projects
+from create_task import get_api_token
+from create_task import get_project_id
+from create_task import post_task
+from project import Project
+from project import Projects
 
 
 def main():

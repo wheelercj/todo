@@ -1,11 +1,14 @@
-from project import Project, Projects
-from datetime import datetime
-import requests
-import uuid
 import json
-from dotenv import load_dotenv
 import os
 import sys
+import uuid
+from datetime import datetime
+
+import requests
+from dotenv import load_dotenv
+
+from project import Project
+from project import Projects
 
 
 def main():
