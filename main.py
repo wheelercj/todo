@@ -4,7 +4,7 @@ import uuid
 from typing import Optional
 
 import requests
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # https://pypi.org/project/python-dotenv/
 
 from create_task import fetch_projects
 from create_task import get_api_token
@@ -15,7 +15,6 @@ from project import Projects
 
 
 def main():
-    """Prints all active tasks in one project, or creates multiple tasks from markdown"""
     load_dotenv()
     api_token: str = get_api_token()
     projects: Projects = fetch_projects(api_token)

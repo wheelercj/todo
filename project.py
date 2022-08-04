@@ -31,7 +31,7 @@ class Project:
         self.api_token = api_token
 
     def fetch_tasks_and_sections(self):
-        """Fetches all of this project's tasks and sections, and organizes the tasks into sections"""
+        """Fetches and organizes tasks and sections."""
         self.active_tasks: Tasks = self.fetch_active_tasks()
         self.sections: Sections = self.fetch_sections()
         self.my_sections: MySections = self.get_my_sections()
@@ -57,7 +57,7 @@ class Project:
 
         Tasks without a section have a section name of None.
         """
-        my_sections: MySections = dict()
+        my_sections: MySections = {}
         for task in self.active_tasks:
             section_id = task["section_id"]
             if section_id in my_sections:
