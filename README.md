@@ -1,19 +1,21 @@
-# refactor todo list
+# todo
 
-For creating or copying [Todoist](https://todoist.com/) tasks in bulk.
+A terminal command for creating tasks in [Todoist](https://todoist.com/).
 
-Here's what it's like creating new tasks in bulk. I started off creating a new project in Todoist, but you don't need to.  
-![empty Todoist project](images/empty_Todoist_project.png)
+For example, `todo buy oranges`
 
-First, start this program. The first time it runs, it will ask for your API token and tell you where to find it.
+This script uses [Todoist's Python SDK](https://developer.todoist.com/guides/#developing-with-todoist).
 
-Then enter a project and choose whether you want to:
-1. view all the tasks in a list that's easy to copy and paste somewhere else
-2. or create new tasks in bulk  
-![example project name list](images/example_project_name_list.png)
+## setup
 
-Below is an example of a format that works when creating new tasks in bulk. Each task is on its own line, and tasks can optionally be given a due date by ending the line with a date in [YYMMDD] format. Any markdown bullet points or empty checkboxes at the start of the line will be removed. Lines that start with at least one # (tag symbol) will create a Todoist section.  
-![example tasks input](images/example_tasks_input.png)
+1. `git clone https://github.com/wheelercj/todo.git`
+2. `cd todo`
+3. `pip install -r requirements.txt`
+4. Create a .env file with variables `todoist_api_token` and `todoist_project_id`
+5. Add todo.py to your PATH environment variable
+6. Restart your terminal
+7. `todo see if this works`
 
-Then the new tasks and sections appear in Todoist!  
-![example tasks now in Todoist](images/example_tasks_now_in_Todoist.png)
+## done
+
+There's also a `done` command for if you want to create a new task and immediately mark it as complete. The setup is the same but with done.py instead of todo.py.
