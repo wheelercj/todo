@@ -3,6 +3,15 @@ revision = 2
 requires-python = ">=3.13"
 
 [[package]]
+name = "annotated-types"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ee/67/531ea369ba64dcff5ec9c3402f9f51bf748cec26dde048a2f973a4eea7f5/annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89", size = 16081, upload-time = "2024-05-20T21:33:25.928Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53", size = 13643, upload-time = "2024-05-20T21:33:24.1Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2025.4.26"
 source = { registry = "https://pypi.org/simple" }
@@ -99,6 +108,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/71/7a/e002d5ce624ed46dfc32abe1deff32190f3ac47ede911789ee936f5a4255/cryptography-45.0.3-cp37-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:57a6500d459e8035e813bd8b51b671977fb149a8c95ed814989da682314d0782", size = 4450308, upload-time = "2025-05-25T14:16:48.228Z" },
     { url = "https://files.pythonhosted.org/packages/87/ad/3fbff9c28cf09b0a71e98af57d74f3662dea4a174b12acc493de00ea3f28/cryptography-45.0.3-cp37-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:f22af3c78abfbc7cbcdf2c55d23c3e022e1a462ee2481011d518c7fb9c9f3d65", size = 4325125, upload-time = "2025-05-25T14:16:49.844Z" },
     { url = "https://files.pythonhosted.org/packages/f5/b4/51417d0cc01802304c1984d76e9592f15e4801abd44ef7ba657060520bf0/cryptography-45.0.3-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:232954730c362638544758a8160c4ee1b832dc011d2c41a306ad8f7cccc5bb0b", size = 4560038, upload-time = "2025-05-25T14:16:51.398Z" },
+]
+
+[[package]]
+name = "dataclass-wizard"
+version = "0.35.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/64/c5/10f2bd575b4fee1cf26b0ffa5fead2d6525f950a797566437a51fa08a94f/dataclass-wizard-0.35.0.tar.gz", hash = "sha256:8e4b254991bf93416a48e2911bb985e3787cff11f00270c3d1165d2523cb3fb6", size = 295578, upload-time = "2025-01-20T04:09:52.344Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3a/95/968dff23cfd82806bf0e2d1c155227717046aed5e7afd8bc0fefdc7eaaf3/dataclass_wizard-0.35.0-py2.py3-none-any.whl", hash = "sha256:3bb19292477f0bebb12e9cc9178f1a6b93d133af4ae065abf14b713142b32edf", size = 176558, upload-time = "2025-01-20T04:09:49.563Z" },
 ]
 
 [[package]]
@@ -268,7 +286,7 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.2.1" },
     { name = "keyring", specifier = ">=25.6.0" },
-    { name = "todoist-api-python", specifier = "==2.1.3" },
+    { name = "todoist-api-python", specifier = ">=3.1.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -276,14 +294,16 @@ dev = [{ name = "ruff", specifier = ">=0.11.12" }]
 
 [[package]]
 name = "todoist-api-python"
-version = "2.1.3"
+version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "annotated-types" },
+    { name = "dataclass-wizard" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8d/17/d8306b12be242d5980e791ecf27a4ebfdbc7e3841dfc9f8f0a7c313d8911/todoist_api_python-2.1.3.tar.gz", hash = "sha256:6fcbb48f4432191f7019226b02808e031da84019c5806410bb1d8acdd865d295", size = 9531, upload-time = "2023-08-15T15:12:05.835Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c6/db/7e31fa6e683cbdc5c823edaddfdb9437b0d37e817c919d0a54ef2a52b1a3/todoist_api_python-3.1.0.tar.gz", hash = "sha256:7cad732f58a4bdfbd1c073a1a8be1c1b4e13ae0c8be210bb7840fbba06eb987c", size = 20212, upload-time = "2025-05-07T17:50:47.345Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/69/60e613fcd8dea18105f653afcbbb48fb9a13cedc2403ab04f4f863b9dc9e/todoist_api_python-2.1.3-py3-none-any.whl", hash = "sha256:7d182ff9d663dddae445ad118cb56ad8596e70a2f0f38bd4ebfa40bbba60fb0a", size = 12112, upload-time = "2023-08-15T15:12:04.223Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/99/19c8fcaa0f691d41dc5687cb21432b7ea01175b9e4b4097a6caffedbe6b7/todoist_api_python-3.1.0-py3-none-any.whl", hash = "sha256:20ee2445983235566e7f2b2c82f769b9a265bb3fa6d7aad3fa73cf9e2d4cd787", size = 23102, upload-time = "2025-05-07T17:50:46.43Z" },
 ]
 
 [[package]]

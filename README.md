@@ -2,7 +2,7 @@
 
 A terminal command for creating tasks in [Todoist](https://todoist.com/).
 
-This script uses [Todoist's Python SDK](https://developer.todoist.com/guides/#developing-with-todoist).
+This script uses [Todoist's Python SDK](https://doist.github.io/todoist-api-python/).
 
 ## setup
 
