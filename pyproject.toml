@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = ["click>=8.2.1", "keyring>=25.6.0", "todoist-api-python>=3.1.0"]
 
 [dependency-groups]
-dev = ["ruff>=0.11.12"]
+dev = ["ruff==0.11.13"]
 
 # Configuring Ruff: https://docs.astral.sh/ruff/configuration/
 [tool.ruff] # https://docs.astral.sh/ruff/settings/
