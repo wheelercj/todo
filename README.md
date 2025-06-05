@@ -19,3 +19,7 @@ alias todo="uv run --project $HOME/todo $HOME/todo/todo.py"
 ## done
 
 There's also a `done` command for if you want to create a new task and immediately mark it as complete. The setup is the same but with done.py instead of todo.py.
+
+## clear keyring
+
+If you chose to save your Todoist API token and/or project ID into your device's keyring, you can delete them by running clear_keyring.py.
