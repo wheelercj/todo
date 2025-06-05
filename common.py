@@ -1,17 +1,15 @@
 import os
 import sys
-from dotenv import load_dotenv
-from todoist_api_python.api import TodoistAPI
+from todoist_api_python.api import TodoistAPI # pip install todoist-api-python==2.1.3
 
 
 def get_inputs():
-    load_dotenv()
-
     due_string: str = "today"
 
-    api_token: str = os.environ["todoist_api_token"]
+    with open(os.path.expanduser("~/.config/todo-saver/todoist-token"), encoding="utf8") as file:
+        api_token: str = file.read().strip()
     if not api_token:
-        print("Error: could not find env var `todoist_api_token`")
+        print("Error: the Todoist API token file is empty?")
         sys.exit(1)
 
     content: str = " ".join(sys.argv[1:])
@@ -24,7 +22,8 @@ def get_inputs():
 
     api = TodoistAPI(api_token)
 
-    project_id: str | None = os.environ.get("todoist_project_id")
+    with open(os.path.expanduser("~/.config/todo-saver/todoist-project-id"), encoding="utf8") as file:
+        project_id: str = file.read().strip()
     if not project_id:
         try:
             projects = api.get_projects()
