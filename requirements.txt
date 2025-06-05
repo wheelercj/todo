@@ -1,2 +1,0 @@
-python-dotenv==0.20.0
-todoist-api-python==2.1.3

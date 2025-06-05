@@ -1,5 +1,7 @@
 """Creates a new task in Todoist"""
+
 import sys
+
 from common import get_inputs
 
 
