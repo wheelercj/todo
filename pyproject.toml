@@ -1,6 +1,6 @@
 [project]
 name = "todo"
-version = "0.0.2"
+version = "0.1.0"
 description = "Create a new Todoist task"
 readme = "README.md"
 requires-python = ">=3.13"
