@@ -2,19 +2,16 @@
 
 A terminal command for creating tasks in [Todoist](https://todoist.com/).
 
-For example, `todo buy oranges`.
-
 This script uses [Todoist's Python SDK](https://developer.todoist.com/guides/#developing-with-todoist).
 
 ## setup
 
 1. `git clone https://github.com/wheelercj/todo.git`
-2. `pip install -r todo/requirements.txt`
-3. Get your API token [here](https://app.todoist.com/app/settings/integrations/developer).
-4. Create files named `~/.config/todo-saver/todoist-token` and `~/.config/todo-saver/todoist-project-id` with your Todoist token and the ID of the Todoist project you want to create new tasks in.
-5. Add todo.py to your PATH environment variable.
-6. Restart your terminal.
-7. `todo see if this works`
+2. Get your API token [here](https://app.todoist.com/app/settings/integrations/developer).
+3. Create files named `~/.config/todo-saver/todoist-token` and `~/.config/todo-saver/todoist-project-id` with your Todoist token and the ID of the Todoist project you want to create new tasks in.
+4. `uv run todo.py see if this works`
+
+I recommend creating a custom terminal command to make using the script easier.
 
 ## done
 

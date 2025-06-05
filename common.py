@@ -1,6 +1,7 @@
 import os
 import sys
-from todoist_api_python.api import TodoistAPI # pip install todoist-api-python==2.1.3
+
+from todoist_api_python.api import TodoistAPI
 
 
 def get_inputs():
@@ -22,7 +23,9 @@ def get_inputs():
 
     api = TodoistAPI(api_token)
 
-    with open(os.path.expanduser("~/.config/todo-saver/todoist-project-id"), encoding="utf8") as file:
+    with open(
+        os.path.expanduser("~/.config/todo-saver/todoist-project-id"), encoding="utf8"
+    ) as file:
         project_id: str = file.read().strip()
     if not project_id:
         try:
