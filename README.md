@@ -6,12 +6,15 @@ This script uses [Todoist's Python SDK](https://developer.todoist.com/guides/#de
 
 ## setup
 
-1. `git clone https://github.com/wheelercj/todo.git`
-2. Get your API token [here](https://app.todoist.com/app/settings/integrations/developer).
-3. Create files named `~/.config/todo-saver/todoist-token` and `~/.config/todo-saver/todoist-project-id` with your Todoist token and the ID of the Todoist project you want to create new tasks in.
-4. `uv run todo.py see if this works`
+1. `git clone https://github.com/wheelercj/todo.git && cd todo`
+2. Get your Todoist API token [here](https://app.todoist.com/app/settings/integrations/developer).
+3. `uv run todo.py Buy oranges`
 
-I recommend creating a custom terminal command to make using the script easier.
+I recommend creating a custom terminal command to make running the script easier. You can use uv's `--project` option to specify the virtual environment's location. For example, here's the Bash command to create a `todo` command:
+
+```bash
+alias todo="uv run --project $HOME/todo $HOME/todo/todo.py"
+```
 
 ## done
 
