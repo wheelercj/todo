@@ -15,7 +15,7 @@ def main():
         sys.exit(1)
 
     try:
-        api.close_task(task.id)
+        api.complete_task(task.id)
     except Exception as err:
         print(f"Error: {err}")
         sys.exit(1)

@@ -1,9 +1,11 @@
 import getpass
 import sys
+from typing import Iterator
 
 import click  # https://palletsprojects.com/projects/click
 import keyring  # https://github.com/jaraco/keyring
-from todoist_api_python.api import TodoistAPI
+from todoist_api_python.api import TodoistAPI  # https://doist.github.io/todoist-api-python/
+from todoist_api_python.models import Project  # https://doist.github.io/todoist-api-python/
 
 
 def get_inputs():
@@ -52,16 +54,17 @@ def get_todoist_project_id(repo_url: str, user: str, api: TodoistAPI) -> str:
     project_id: str | None = keyring.get_password(repo_url, user)
     if not project_id:
         try:
-            projects = api.get_projects()
+            projects_pages: Iterator[list[Project]] = api.get_projects()
         except Exception as err:
             print(f"Error: {err}")
             sys.exit(1)
 
-        for project in projects:
-            if project.name == "Inbox":
-                project_id = project.id
-                print(f"Using project {project.name} with ID {project_id}")
-                break
+        for projects_page in projects_pages:
+            for project in projects_page:
+                if project.name == "Inbox":
+                    project_id = project.id
+                    print(f"Using project {project.name} with ID {project_id}")
+                    break
         if not project_id:
             print("Error: no project ID found")
             sys.exit(1)
