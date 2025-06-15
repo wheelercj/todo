@@ -62,6 +62,36 @@ def add(task: tuple[str]) -> None:
 
 
 @main.command()
+@click.argument("task", nargs=-1)
+def done(task: tuple[str]) -> None:
+    """Create a new task & immediately mark it as complete"""
+    task_s: str = " ".join(task).strip()
+    if not task_s:
+        raise click.BadArgumentUsage("task is required")
+    if "System.Object[]" in task_s:
+        raise click.BadArgumentUsage("Put quotes around the task when it has commas")
+
+    api_token: str = get_todoist_api_token(prog_id, user)
+    api = TodoistAPI(api_token)
+
+    project_id: str = get_todoist_project_id(prog_id, project_id_key, api)
+
+    try:
+        task_obj: Task = api.add_task(content=task_s, due_string="today", project_id=project_id)
+    except Exception as err:
+        print(f"{type(err).__name__}: {err}")
+        if isinstance(err, HTTPError):
+            print("You may need to log out and try again")
+        sys.exit(1)
+
+    if not api.complete_task(task_obj.id):
+        print("Failed to mark task as completed for an unknown reason")
+        sys.exit(1)
+
+    print("Task completed")
+
+
+@main.command()
 @click.argument("destination", type=click.Path(exists=True, file_okay=False))
 def export(destination: str) -> None:
     """Exports your tasks as a JSON file"""
