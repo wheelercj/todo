@@ -1,13 +1,11 @@
 import getpass
 import sys
 from typing import Iterator
-from urllib.error import HTTPError
 
 import click  # https://palletsprojects.com/projects/click
 import keyring  # https://github.com/jaraco/keyring
 from todoist_api_python.api import TodoistAPI  # https://doist.github.io/todoist-api-python/
 from todoist_api_python.models import Project  # https://doist.github.io/todoist-api-python/
-from todoist_api_python.models import Task  # https://doist.github.io/todoist-api-python/
 
 
 def get_todoist_api_token(prog_id: str, user: str) -> str:
@@ -55,18 +53,3 @@ def get_todoist_project_id(prog_id: str, project_id_key: str, api: TodoistAPI) -
             print("Todoist project ID saved")
 
     return project_id
-
-
-def create_todoist_task(task: str, prog_id: str, user: str, project_id_key: str) -> Task:
-    api_token: str = get_todoist_api_token(prog_id, user)
-    api = TodoistAPI(api_token)
-
-    project_id: str = get_todoist_project_id(prog_id, project_id_key, api)
-
-    try:
-        return api.add_task(content=task, due_string="today", project_id=project_id)
-    except Exception as err:
-        print(f"{type(err).__name__}: {err}")
-        if isinstance(err, HTTPError):
-            print("You may need to log out and try again")
-        sys.exit(1)

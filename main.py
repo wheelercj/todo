@@ -1,9 +1,11 @@
 import getpass
+import sys
 import tomllib
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 from typing import Iterator
+from urllib.error import HTTPError
 
 import click  # https://palletsprojects.com/projects/click
 import jsonpickle  # https://jsonpickle.readthedocs.io/en/latest/
@@ -12,8 +14,8 @@ import keyring.errors  # https://github.com/jaraco/keyring
 from todoist_api_python.api import TodoistAPI  # https://doist.github.io/todoist-api-python/
 from todoist_api_python.models import Task  # https://doist.github.io/todoist-api-python/
 
-from todoist_client import create_todoist_task
 from todoist_client import get_todoist_api_token
+from todoist_client import get_todoist_project_id
 
 
 prog_folder: Path = Path(__file__).parent
@@ -43,7 +45,19 @@ def add(task: tuple[str]) -> None:
     if "System.Object[]" in task_s:
         raise click.BadArgumentUsage("Put quotes around the task when it has commas")
 
-    create_todoist_task(task_s, prog_id, user, project_id_key)
+    api_token: str = get_todoist_api_token(prog_id, user)
+    api = TodoistAPI(api_token)
+
+    project_id: str = get_todoist_project_id(prog_id, project_id_key, api)
+
+    try:
+        _ = api.add_task(content=task_s, due_string="today", project_id=project_id)
+    except Exception as err:
+        print(f"{type(err).__name__}: {err}")
+        if isinstance(err, HTTPError):
+            print("You may need to log out and try again")
+        sys.exit(1)
+
     print("Task created")
 
 
