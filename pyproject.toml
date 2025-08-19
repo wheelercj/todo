@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["ruff==0.12.8"]
+dev = ["ruff==0.12.9"]
 
 # Configuring Ruff: https://docs.astral.sh/ruff/configuration/
 [tool.ruff] # https://docs.astral.sh/ruff/settings/
