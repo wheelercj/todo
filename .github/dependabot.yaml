@@ -7,3 +7,7 @@ updates:
     directory: "/"  # location of package manifests
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "ruff"
+        versions:
+          - ">=0.13.0"
