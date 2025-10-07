@@ -94,7 +94,7 @@ def done(task: tuple[str]) -> None:
 @main.command()
 @click.argument("destination", type=click.Path(exists=True, file_okay=False))
 def export(destination: str) -> None:
-    """Exports your tasks as a JSON file"""
+    """Exports your tasks as a JSON file (NOTICE: no import command!)"""
     dest_path: Path = Path(destination).resolve()
 
     api_token: str = get_todoist_api_token(prog_id, user)
