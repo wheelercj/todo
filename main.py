@@ -53,9 +53,9 @@ def add(task: tuple[str]) -> None:
     try:
         _ = api.add_task(content=task_s, due_string="today", project_id=project_id)
     except Exception as err:
-        print(f"{type(err).__name__}: {err}")
+        print(repr(err), file=sys.stderr)
         if isinstance(err, HTTPError):
-            print("You may need to log out and try again")
+            print("You may need to log out and try again", file=sys.stderr)
         sys.exit(1)
 
     print("Task created")
@@ -79,13 +79,13 @@ def done(task: tuple[str]) -> None:
     try:
         task_obj: Task = api.add_task(content=task_s, due_string="today", project_id=project_id)
     except Exception as err:
-        print(f"{type(err).__name__}: {err}")
+        print(repr(err), file=sys.stderr)
         if isinstance(err, HTTPError):
-            print("You may need to log out and try again")
+            print("You may need to log out and try again", file=sys.stderr)
         sys.exit(1)
 
     if not api.complete_task(task_obj.id):
-        print("Failed to mark task as completed for an unknown reason")
+        print("Failed to mark task as completed for an unknown reason", file=sys.stderr)
         sys.exit(1)
 
     print("Task completed")
