@@ -53,7 +53,7 @@ def add(task: tuple[str]) -> None:
     try:
         _ = api.add_task(content=task_s, due_string="today", project_id=project_id)
     except Exception as err:
-        print(f"{type(err).__name__}: {err}")
+        print(repr(err))
         if isinstance(err, HTTPError):
             print("You may need to log out and try again")
         sys.exit(1)
@@ -79,7 +79,7 @@ def done(task: tuple[str]) -> None:
     try:
         task_obj: Task = api.add_task(content=task_s, due_string="today", project_id=project_id)
     except Exception as err:
-        print(f"{type(err).__name__}: {err}")
+        print(repr(err))
         if isinstance(err, HTTPError):
             print("You may need to log out and try again")
         sys.exit(1)

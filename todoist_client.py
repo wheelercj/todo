@@ -32,7 +32,7 @@ def get_todoist_project_id(prog_id: str, project_id_key: str, api: TodoistAPI) -
         try:
             projects_pages: Iterator[list[Project]] = api.get_projects()
         except Exception as err:
-            print(f"{type(err).__name__}: {err}")
+            print(repr(err))
             sys.exit(1)
 
         for projects_page in projects_pages:
