@@ -1,5 +1,4 @@
 import getpass
-import sys
 from typing import Iterator
 
 import click  # https://palletsprojects.com/projects/click
@@ -13,8 +12,7 @@ def get_todoist_api_token(prog_id: str, user: str) -> str:
     if not api_token:
         api_token = getpass.getpass("Enter your Todoist API token: ").strip()
         if not api_token:
-            print("No API token received", file=sys.stderr)
-            sys.exit(1)
+            raise click.ClickException("No API token received")
 
         chose_to_save: bool = click.confirm(
             "Would you like to save the Todoist API token into your device's keyring?"
@@ -32,8 +30,7 @@ def get_todoist_project_id(prog_id: str, project_id_key: str, api: TodoistAPI) -
         try:
             projects_pages: Iterator[list[Project]] = api.get_projects()
         except Exception as err:
-            print(repr(err), file=sys.stderr)
-            sys.exit(1)
+            raise click.ClickException(repr(err))
 
         for projects_page in projects_pages:
             for project in projects_page:
@@ -42,8 +39,7 @@ def get_todoist_project_id(prog_id: str, project_id_key: str, api: TodoistAPI) -
                     print(f"Using project {project.name} with ID {project_id}")
                     break
         if not project_id:
-            print("Error: no project ID found", file=sys.stderr)
-            sys.exit(1)
+            raise click.ClickException("no project ID found")
 
         chose_to_save: bool = click.confirm(
             "Would you like to save the Todoist project ID into your device's keyring?"
