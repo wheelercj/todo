@@ -23,7 +23,7 @@ toml_data: dict[str, Any] = tomllib.loads(pyproject_toml.read_text())
 toml_project: dict[str, Any] = toml_data["project"]
 prog_name: str = toml_project["name"]
 prog_version: str = toml_project["version"]
-prog_id: str = "github.com/wheelercj/todo"
+prog_id: str = "wheelercj/todo"
 user: str = getpass.getuser()
 project_id_key: str = user + " project_id"
 
