@@ -7,6 +7,10 @@ updates:
     directory: "/"  # location of package manifests
     schedule:
       interval: "weekly"
+    cooldown:
+      semver-major-days: 21
+      semver-minor-days: 14
+      semver-patch-days: 7
     ignore:
       - dependency-name: "ruff"
         versions:
